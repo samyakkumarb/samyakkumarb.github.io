@@ -2,7 +2,7 @@
 
 A light, static version of the portfolio for marine robotics and AUV research. It is plain HTML, CSS and JavaScript: no framework, no build step and no npm on GitHub Pages.
 
-**Live:** https://samyakkumarb.github.io
+**Live:** https://samyak-17-pixel.github.io/samyakkumarb.github.io/
 
 ## What's here
 
@@ -45,18 +45,14 @@ cd ~/Website_github
 python3 -m http.server 8000      # open http://localhost:8000
 ```
 
-## Deploy to GitHub Pages (samyakkumarb.github.io)
+## Deploy
 
-1. On GitHub: **+ → New organization → Free**, and name it `samyakkumarb`.
-2. In that organisation, create a **public** repo named exactly `samyakkumarb.github.io` (leave it empty).
-3. Push this folder:
-   ```bash
-   cd ~/Website_github
-   git add -A && git commit -m "Portfolio site"
-   git remote add origin git@github.com:samyakkumarb/samyakkumarb.github.io.git
-   git push -u origin main
-   ```
-4. Repo **Settings → Pages → Build and deployment → Source: Deploy from a branch → `main` / `(root)`**.
-5. After about a minute the site is live at https://samyakkumarb.github.io.
+Repo: `Samyak-17-pixel/samyakkumarb.github.io`. Pages deploys from `main` / root, so to update the live site:
+
+```bash
+git add -A && git commit -m "Update" && git push
+```
+
+**Moving to https://samyakkumarb.github.io later:** create a free org `samyakkumarb`, transfer this repo to it (Settings → Transfer), and replace `https://samyak-17-pixel.github.io/samyakkumarb.github.io/` with `https://samyakkumarb.github.io/` throughout. In `404.html`, change the `/samyakkumarb.github.io/` prefix to `/`.
 
 The site is about 6 MB in total. GitHub Pages allows 1 GB per site, so there is plenty of room.
