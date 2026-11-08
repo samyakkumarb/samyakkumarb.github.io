@@ -112,7 +112,7 @@ fs.writeFileSync(
 );
 
 // sitemap.xml for search engines
-const SITE_URL = "https://samyak-17-pixel.github.io/samyakkumarb.github.io/";
+const SITE_URL = "https://samyakkumarb.github.io/";
 const urls = [
   SITE_URL,
   ...(site.papers || []).map((p) => `${SITE_URL}paper.html?p=${encodeURIComponent(p.slug)}`),

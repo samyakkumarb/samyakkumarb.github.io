@@ -3,7 +3,7 @@
 window.SITE_LINKS = {
   github: "https://github.com/Samyak-17-pixel",
   cv: "Samyak_Kumar_CV.pdf",
-  siteUrl: "https://samyak-17-pixel.github.io/samyakkumarb.github.io/",
+  siteUrl: "https://samyakkumarb.github.io/",
   repos: {
     timi: "Timi_Control",
     "gate-detection": "Gate-Detection",

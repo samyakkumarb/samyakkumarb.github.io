@@ -2,7 +2,7 @@
 
 A light, static version of the portfolio for marine robotics and AUV research. It is plain HTML, CSS and JavaScript: no framework, no build step and no npm on GitHub Pages.
 
-**Live:** https://samyak-17-pixel.github.io/samyakkumarb.github.io/
+**Live:** https://samyakkumarb.github.io/
 
 ## What's here
 
@@ -47,12 +47,10 @@ python3 -m http.server 8000      # open http://localhost:8000
 
 ## Deploy
 
-Repo: `Samyak-17-pixel/samyakkumarb.github.io`. Pages deploys from `main` / root, so to update the live site:
+Repo: `samyakkumarb/samyakkumarb.github.io` (in the `samyakkumarb` organization). Pages deploys from `main` / root, so to update the live site:
 
 ```bash
 git add -A && git commit -m "Update" && git push
 ```
-
-**Moving to https://samyakkumarb.github.io later:** create a free org `samyakkumarb`, transfer this repo to it (Settings → Transfer), and replace `https://samyak-17-pixel.github.io/samyakkumarb.github.io/` with `https://samyakkumarb.github.io/` throughout. In `404.html`, change the `/samyakkumarb.github.io/` prefix to `/`.
 
 The site is about 6 MB in total. GitHub Pages allows 1 GB per site, so there is plenty of room.
