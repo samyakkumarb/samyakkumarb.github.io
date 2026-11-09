@@ -32,7 +32,7 @@
 
 html, body { background: #fff !important; color: #000; font-size: 10.5pt; line-height: 1.5; }
 
-.ocean, .brand, .actions, .gauge, .depth-chip, .zone-sheet, .zone-banner, .next-hint, .ascend, .seabed-mark, .palette, .toast, .lightbox, .scroll-cue,
+.ocean, .brand, .actions, .gauge, .depth-chip, .zone-sheet, .zone-banner, .nd-stage, .critters, .ascend, .seabed-mark, .palette, .toast, .lightbox, .scroll-cue,
 .hero-visual, .filters, .pub-actions .btn-cite, .search-btn, .skip-link, .toc,
 .pager, .detail-actions, .hero-ctas, .contact::before, .glare, .more-link, .role summary {
   display: none !important;
@@ -75,3 +75,9 @@ html, body { background: #fff !important; color: #000; font-size: 10.5pt; line-h
 .contact-links { display: grid !important; grid-template-columns: 1fr 1fr; }
 .contact-link { max-width: none !important; }
 .site-footer { padding: 8pt 0 0; }
+.nd { display: block !important; }
+.nd-ch { min-height: 0 !important; opacity: 1 !important; padding: 6pt 0 !important; border: 0 !important; }
+.nd-ch::before { display: none !important; }
+.nd-ch > * { transform: none !important; }
+.nd-ch.on h3, .nd-ch h3 { background: none !important; color: #000 !important; }
+.nd-quote span { opacity: 1 !important; transform: none !important; filter: none !important; }

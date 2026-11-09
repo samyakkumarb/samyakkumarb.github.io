@@ -129,7 +129,6 @@
         </div>
         <div data-reveal style="--d:.1s">
           <ul class="themes">${arr(R.themes).map((t, i) => `<li class="theme"><span class="n">${String(i + 1).padStart(2, "0")}</span><span>${esc(t)}</span></li>`).join("")}</ul>
-          <a class="next-hint" href="#about">Next direction, not yet published: <b>polar &amp; under-ice robotics</b> ${icon("arrow")}</a>
         </div>
       </div>
       ${papers.length ? `<div class="subhead" data-reveal><h3>Publications</h3><span class="hint">${papers.length} peer-reviewed</span></div>
@@ -328,6 +327,9 @@
         .join("")}</div>`,
     );
 
+    /* ---------------- the next dive: five-act animated story ---------------- */
+    if (window.renderNext) window.renderNext(S.next, { set, head, esc, arr });
+
     /* ---------------- contact ---------------- */
     const linkCard = (k, v, href, ic, ext) =>
       `<a class="contact-link" href="${esc(href)}"${ext ? ' target="_blank" rel="noopener"' : ""}><span class="ic">${icon(ic)}</span><span><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div></span></a>`;
@@ -335,7 +337,7 @@
     set(
       "contact-body",
       `<div class="card contact" data-reveal="scale">
-        <div class="seabed-mark">▼ 6000 m · seabed reached</div>
+        <div class="seabed-mark">▲ 0 m · back at the surface</div>
         <div class="eyebrow" style="justify-content:center">Contact</div>
         <h2>Let’s talk about the ocean.</h2>
         <p>${fp && fp.target ? `Currently looking for: ${esc(fp.target)}. ` : ""}I’m happy to discuss research, collaborations or underwater robots.</p>

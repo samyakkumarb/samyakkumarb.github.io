@@ -117,11 +117,11 @@
     ["experience", "Experience"],
     ["education", "Education"],
     ["skills", "Skills"],
+    ["next", "Next dive"],
     ["contact", "Contact"],
   ];
-  const ZONE_NAMES = { surface: "Surface", sunlit: "Sunlit", twilight: "Twilight", midnight: "Midnight", abyss: "Abyss", seabed: "Seabed" };
-  const ZONE_LINK = { surface: "home", sunlit: "about", twilight: "research", midnight: "fleet", abyss: "projects", seabed: "experience" };
-  const END_DEPTH = 6500;
+  const ZONE_NAMES = { surface: "Surface", sunlit: "Sunlit", twilight: "Twilight", midnight: "Midnight", abyss: "Abyss", seabed: "Seabed", next: "Next dive" };
+  const ZONE_LINK = { surface: "home", sunlit: "about", twilight: "research", midnight: "fleet", abyss: "projects", seabed: "experience", next: "next" };
   const fmtDepth = (m) => String(Math.round(m)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   // current dive state, read by the ocean backdrop
   const dive = { metres: 0, frac: 0 };
@@ -178,7 +178,7 @@
       zones
         .map((z) => {
           const k = z.dataset.zone;
-          return `<a class="g-mark" href="#${ZONE_LINK[k]}" data-z="${k}" aria-label="${ZONE_NAMES[k]} zone, ${fmtDepth(+z.dataset.depth)} metres"><span class="g-dot"></span><span class="g-label">${ZONE_NAMES[k]}<i>${fmtDepth(+z.dataset.depth)} m</i></span></a>`;
+          return `<a class="g-mark" href="#${ZONE_LINK[k]}" data-z="${k}" aria-label="${ZONE_NAMES[k]}${z.dataset.label ? ", " + z.dataset.label : ` zone, ${fmtDepth(+z.dataset.depth)} metres`}"><span class="g-dot"></span><span class="g-label">${ZONE_NAMES[k]}<i>${z.dataset.label || fmtDepth(+z.dataset.depth) + " m"}</i></span></a>`;
         })
         .join("") +
       `<div class="g-auv">${AUV_SVG}<div class="g-read glass"><b>0</b> m<span>Surface</span></div></div>`;
@@ -192,7 +192,7 @@
     sheet.className = "zone-sheet glass";
     sheet.id = "zone-sheet";
     sheet.innerHTML = zones
-      .map((z) => `<a href="#${ZONE_LINK[z.dataset.zone]}" data-z="${z.dataset.zone}">${ZONE_NAMES[z.dataset.zone]}<i>${fmtDepth(+z.dataset.depth)} m</i></a>`)
+      .map((z) => `<a href="#${ZONE_LINK[z.dataset.zone]}" data-z="${z.dataset.zone}">${ZONE_NAMES[z.dataset.zone]}<i>${z.dataset.label || fmtDepth(+z.dataset.depth) + " m"}</i></a>`)
       .join("");
     document.body.append(nav, chip, sheet);
 
@@ -205,7 +205,8 @@
     const measure = () => {
       const docH = Math.max(1, root.scrollHeight);
       anchors = zones.map((z) => ({ y: z.getBoundingClientRect().top + window.scrollY, d: +z.dataset.depth, k: z.dataset.zone }));
-      anchors.push({ y: docH, d: END_DEPTH, k: "seabed" });
+      // the last zone is the ascent: depth climbs back to the surface by the end of the page
+      anchors.push({ y: docH, d: 0, k: "next" });
       marks.forEach((m, i) => (m.style.top = `${((anchors[i].y / docH) * 100).toFixed(2)}%`));
       update();
     };
@@ -236,6 +237,7 @@
         sheetLinks.forEach((l) => l.classList.toggle("active", l.dataset.z === zk));
       }
       auv.classList.toggle("lights", metres > 180);
+      auv.classList.toggle("rising", zk === "next");
     };
     let ticking = false;
     window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; update(); }); } }, { passive: true });

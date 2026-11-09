@@ -486,16 +486,35 @@ window.SITE = {
    "Navigation, estimation and sensor fault detection (IMU / DVL / pressure)",
    "Sonar-first perception for low-visibility environments",
    "Three AUVs built: torpedo docking, acoustic mapping and fully actuated research platforms",
-   "Next: robots that navigate and map under polar sea ice",
+   "Next: real sea trials, and robots under polar sea ice",
    "Two OCEANS 2026 papers: sensor integrity monitoring and forward-scan sonar 3D reconstruction"
   ]
  },
  "next": {
-  "lead": "Every vehicle I have built so far has been tested in pools and basins. Next, I want to build underwater robots that keep working where people cannot easily go: under sea ice in the polar oceans and in the deep sea, where a robot cannot come up for a GPS fix and nobody can step in if something goes wrong. It has to know where it is, notice when a sensor stops giving good data, and decide for itself where to go next.",
+  "lead": "Every vehicle I have built so far has been tested in pools and wave basins. Next, I want to go further: higher studies, the same work on a larger scale, and real sea trials, taking robots out of the basin and into the open ocean, where currents, waves and murky water decide whether an idea really works. Polar robotics is one of the places I most want to take this: under sea ice, where a robot cannot come up for a GPS fix and nobody can step in if something goes wrong.",
   "directions": [
    {
-    "title": "Polar robotics: under the ice",
-    "highlight": "What excites me most",
+    "title": "Real sea trials: from the basin to the open ocean",
+    "highlight": "The first step",
+    "text": "Pools and basins taught me how to build and test a vehicle. The real ocean is different: currents, waves, poor visibility, acoustic multipath, launch and recovery from a boat, and missions that cannot fail halfway. I want to take navigation, docking and autonomy out of the basin and prove them at sea.",
+    "buildsOn": [
+     {
+      "label": "TIMI AUV",
+      "to": "/projects/timi"
+     },
+     {
+      "label": "GNC platform",
+      "to": "/projects/gnc-platform"
+     },
+     {
+      "label": "Active search & docking",
+      "to": "/projects/info-driven-docking"
+     }
+    ]
+   },
+   {
+    "title": "Polar robotics: trying it under the ice",
+    "highlight": "What excites me",
     "text": "Under sea ice an AUV cannot surface for a GPS fix or be picked up if something goes wrong, compasses become unreliable near the poles, and the ice above keeps moving. I want to build robots that navigate under the ice, map its underside and find their way home on their own, so scientists can study one of the fastest-changing and least observed parts of the ocean.",
     "buildsOn": [
      {
@@ -569,7 +588,12 @@ window.SITE = {
    {
     "when": "From 2027",
     "title": "Graduate research",
-    "text": "An MS / PhD in marine autonomy and ocean observation, with a focus on polar and under-ice robotics, strong foundations, time on real vehicles at sea, and mentors who have operated robots in the field."
+    "text": "An MS / PhD in marine autonomy and ocean observation at a lab that runs real field campaigns, at sea and in polar waters, with strong foundations, time on real vehicles at sea, and mentors who have operated robots in the field."
+   },
+   {
+    "when": "Then",
+    "title": "Scale up",
+    "text": "Longer missions, bigger vehicles and many robots working together: from a single AUV in a basin to fleets on real expeditions."
    },
    {
     "when": "Long term",
@@ -580,6 +604,84 @@ window.SITE = {
     "when": "Always",
     "title": "Giving back",
     "text": "Bring what I learn back to the community that got me started, through Aquavision and the student community, and help marine robotics grow in India."
+   }
+  ],
+  "acts": [
+   {
+    "key": "pool",
+    "kicker": "01 · Where I am",
+    "title": "Built and tested in the pool",
+    "text": "Three AUVs so far, from torpedo docking to acoustic mapping, all tested in pools and wave basins. That is where I learned to build, break and fix a vehicle.",
+    "buildsOn": [
+     {
+      "label": "TIMI",
+      "to": "/projects/timi"
+     },
+     {
+      "label": "DHWANI",
+      "to": "/projects/dhwani"
+     }
+    ]
+   },
+   {
+    "key": "study",
+    "kicker": "02 · Higher studies",
+    "title": "Go deeper into the theory",
+    "text": "An MS / PhD from 2027 in marine autonomy: navigation a robot can trust, seeing with sound when cameras fail, and deciding where to look next, at a lab that runs real field campaigns.",
+    "buildsOn": [
+     {
+      "label": "Sensor integrity paper",
+      "to": "/research/sensor-integrity-lstm"
+     },
+     {
+      "label": "Sonar 3D paper",
+      "to": "/research/sonar-gaussian-splatting"
+     }
+    ]
+   },
+   {
+    "key": "sea",
+    "kicker": "03 · Real sea trials",
+    "title": "Out of the basin, into the ocean",
+    "text": "Currents, waves, murky water, launch and recovery from a ship, and missions that cannot fail halfway. I want to take navigation, docking and autonomy out to sea and see them work for real.",
+    "buildsOn": [
+     {
+      "label": "GNC platform",
+      "to": "/projects/gnc-platform"
+     },
+     {
+      "label": "Active search & docking",
+      "to": "/projects/info-driven-docking"
+     }
+    ]
+   },
+   {
+    "key": "polar",
+    "kicker": "04 · Polar robotics",
+    "title": "Try it under the ice",
+    "text": "Under sea ice there is no GPS, the compass is unreliable and the ice keeps moving. I want to try building robots that navigate there, map the ice from below and find their way home.",
+    "buildsOn": [
+     {
+      "label": "Side-scan simulator",
+      "to": "/projects/sidescan-simulator"
+     },
+     {
+      "label": "Active search & docking",
+      "to": "/projects/info-driven-docking"
+     }
+    ]
+   },
+   {
+    "key": "scale",
+    "kicker": "05 · Bigger scale",
+    "title": "More robots, longer missions",
+    "text": "Bigger vehicles, longer missions and many robots working together for ocean science, and in the long run a research scientist at an ocean institution, giving back to the community that got me started.",
+    "buildsOn": [
+     {
+      "label": "Marine heatwave internship",
+      "to": "/projects/marine-heatwaves"
+     }
+    ]
    }
   ],
   "quote": "I now want to build robots that help scientists answer real questions about the ocean, not only robots that work well in a pool."
