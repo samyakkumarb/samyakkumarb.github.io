@@ -129,13 +129,14 @@
         </div>
         <div data-reveal style="--d:.1s">
           <ul class="themes">${arr(R.themes).map((t, i) => `<li class="theme"><span class="n">${String(i + 1).padStart(2, "0")}</span><span>${esc(t)}</span></li>`).join("")}</ul>
+          <a class="next-hint" href="#about">Next direction, not yet published: <b>polar &amp; under-ice robotics</b> ${icon("arrow")}</a>
         </div>
       </div>
       ${papers.length ? `<div class="subhead" data-reveal><h3>Publications</h3><span class="hint">${papers.length} peer-reviewed</span></div>
       <div class="pubs">${papers
         .map(
           (p, i) => `
-        <article class="card pub" data-reveal style="--d:${i * 0.08}s">
+        <article class="card pub${ME.test(String(p.authors || "").split(",")[0]) ? " first-author" : ""}" data-reveal style="--d:${i * 0.08}s">
           <div class="pub-index" aria-hidden="true">${esc(p.index || String(i + 1).padStart(2, "0"))}</div>
           <div>
             <div class="pub-meta">${p.venue ? `<span class="pub-venue">${esc(p.venue)}</span>` : ""}${p.role ? `<span class="pub-role">${esc(p.role)}</span>` : ""}</div>
@@ -334,6 +335,7 @@
     set(
       "contact-body",
       `<div class="card contact" data-reveal="scale">
+        <div class="seabed-mark">▼ 6000 m · seabed reached</div>
         <div class="eyebrow" style="justify-content:center">Contact</div>
         <h2>Let’s talk about the ocean.</h2>
         <p>${fp && fp.target ? `Currently looking for: ${esc(fp.target)}. ` : ""}I’m happy to discuss research, collaborations or underwater robots.</p>
@@ -344,7 +346,10 @@
           ${contact.githubUrl ? linkCard("GitHub", contact.githubUser || "GitHub", contact.githubUrl, "github", true) : ""}
           ${linkCard("Curriculum vitae", "Download PDF", L.cv, "download", true)}
         </div>
-        ${contact.emailPersonal ? `<div style="margin-top:22px"><button class="btn btn-ghost btn-sm" type="button" id="copy-email">${icon("copy")}Copy email address</button></div>` : ""}
+        <div class="ascend" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          ${contact.emailPersonal ? `<button class="btn btn-ghost btn-sm" type="button" id="copy-email">${icon("copy")}Copy email address</button>` : ""}
+          <a class="btn btn-primary btn-sm" href="#home" data-ascend>Back to the surface ↑</a>
+        </div>
       </div>`,
     );
     const ce = document.getElementById("copy-email");
@@ -387,7 +392,7 @@
       }
     };
     const readColors = () => {
-      const cs = getComputedStyle(document.documentElement);
+      const cs = getComputedStyle(canvas);
       rgb = cs.getPropertyValue("--sonar").trim() || rgb;
       textColor = cs.getPropertyValue("--text-3").trim() || textColor;
     };

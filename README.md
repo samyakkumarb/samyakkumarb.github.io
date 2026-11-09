@@ -13,14 +13,14 @@ A light, static version of the portfolio for marine robotics and AUV research. I
 | `paper.html?p=<slug>` | Publication breakdown with BibTeX |
 | `assets/js/content.js` | **Generated.** All the text (`window.SITE`), pulled from `~/Website/src/content/*.ts` |
 | `assets/js/links.js` | Hand-edited: GitHub repo for each project (public repos only) and the CV filename |
-| `assets/js/common.js` | Theme toggle, header, ocean background, scroll reveals, card tilt, Ctrl/⌘+K search |
+| `assets/js/common.js` | Floating name/CV/search pills, depth gauge (the nav), ocean background, scroll reveals, card tilt, Ctrl/⌘+K search |
 | `assets/js/home.js`, `detail.js` | Page renderers |
-| `assets/css/style.css`, `print.css` | Light and dark ocean themes, plus a clean print view |
+| `assets/css/style.css`, `print.css` | Depth-zone colours (surface → seabed), plus a clean print view |
 | `projects/<slug>/*.webp` | Project images (copied by the sync script) |
 | `Samyak_Kumar_CV.pdf` | The CV behind every "CV" button |
 | `tools/sync-content.mjs` | Copies content and images over from the original React site |
 
-Features: light theme by default with a saved dark toggle; an animated sonar hero; marine snow and bubbles that move away from the cursor; scroll reveals and count-up numbers; a timeline that draws itself as you scroll; tilt cards; Ctrl/⌘+K (or `/`) search; one-click BibTeX copy; and a print stylesheet. Animations are switched off for visitors who have `prefers-reduced-motion` set.
+Features: the home page is a dive. Each section is a depth zone (surface, sunlit, twilight, midnight, abyss, seabed) whose water colour darkens as you scroll, and a depth gauge with a descending AUV replaces the menu (a depth chip and zone list on small screens). Also an animated sonar hero; light rays near the surface; bubbles that turn into marine snow and bioluminescent sparkles with depth, all moving away from the cursor that move away from the cursor; scroll reveals and count-up numbers; a timeline that draws itself as you scroll; tilt cards; Ctrl/⌘+K (or `/`) search; one-click BibTeX copy; and a print stylesheet. Animations are switched off for visitors who have `prefers-reduced-motion` set.
 
 ## Updating content
 

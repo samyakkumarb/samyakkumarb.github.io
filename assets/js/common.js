@@ -1,4 +1,4 @@
-/* Shared behaviour for every page: theme, header, ocean backdrop, reveals, tilt, Ctrl+K palette. */
+/* Shared behaviour for every page: floating chrome, depth gauge, ocean backdrop, reveals, tilt, Ctrl+K palette. */
 (function () {
   "use strict";
 
@@ -108,22 +108,7 @@
     return `@inproceedings{${key},\n${lines.join(",\n")}\n}`;
   }
 
-  /* ---------------- theme ---------------- */
-  function setTheme(t) {
-    document.documentElement.setAttribute("data-theme", t);
-    try { localStorage.setItem("theme", t); } catch { /* private mode */ }
-    const btn = $(".theme-toggle");
-    if (btn) btn.setAttribute("aria-label", t === "dark" ? "Switch to light theme" : "Switch to dark theme");
-    document.dispatchEvent(new CustomEvent("themechange", { detail: t }));
-  }
-  const currentTheme = () => document.documentElement.getAttribute("data-theme") || "light";
-  function toggleTheme() {
-    const next = currentTheme() === "dark" ? "light" : "dark";
-    if (document.startViewTransition && !reduceMotion) document.startViewTransition(() => setTheme(next));
-    else setTheme(next);
-  }
-
-  /* ---------------- header chrome ---------------- */
+  /* ---------------- floating chrome + depth gauge (no header bar) ---------------- */
   const NAV = [
     ["about", "About"],
     ["research", "Research"],
@@ -134,99 +119,151 @@
     ["skills", "Skills"],
     ["contact", "Contact"],
   ];
+  const ZONE_NAMES = { surface: "Surface", sunlit: "Sunlit", twilight: "Twilight", midnight: "Midnight", abyss: "Abyss", seabed: "Seabed" };
+  const ZONE_LINK = { surface: "home", sunlit: "about", twilight: "research", midnight: "fleet", abyss: "projects", seabed: "experience" };
+  const END_DEPTH = 6500;
+  const fmtDepth = (m) => String(Math.round(m)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  // current dive state, read by the ocean backdrop
+  const dive = { metres: 0, frac: 0 };
 
-  function buildHeader() {
+  const AUV_SVG = `<svg viewBox="0 0 58 22" aria-hidden="true">
+      <defs><linearGradient id="auv-body" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd166"/><stop offset="1" stop-color="#f59e0b"/></linearGradient>
+      <linearGradient id="auv-beam" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff7c2" stop-opacity=".75"/><stop offset="1" stop-color="#fff7c2" stop-opacity="0"/></linearGradient></defs>
+      <path class="beam" d="M46 11 L80 -2 L80 24 Z" fill="url(#auv-beam)"/>
+      <path d="M6 7h34a9 4 0 0 1 0 8H6a4 4 0 0 1 0-8z" fill="url(#auv-body)" stroke="#7a4a00" stroke-width=".8"/>
+      <path d="M4 7 L0 3 M4 15 L0 19" stroke="#ffd166" stroke-width="2" stroke-linecap="round"/>
+      <rect x="20" y="4" width="6" height="3" rx="1" fill="#f59e0b"/>
+      <circle cx="44" cy="11" r="1.6" fill="#fff7c2"/>
+    </svg>`;
+
+  function buildChrome() {
     const onHome = !!document.getElementById("home");
     const base = onHome ? "" : "index.html";
-    const header = document.createElement("header");
-    header.className = "site-header";
-    header.innerHTML = `
-      <div class="container header-inner">
-        <a class="brand" href="${base || "#home"}" aria-label="Samyak Kumar — home">
-          <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
-            <circle cx="16" cy="16" r="14.5" fill="none" stroke="var(--accent)" stroke-width="1.4"/>
-            <circle cx="16" cy="16" r="9" fill="none" stroke="var(--accent)" stroke-opacity=".45" stroke-width="1"/>
-            <circle cx="16" cy="16" r="3.6" fill="none" stroke="var(--accent)" stroke-opacity=".35" stroke-width="1"/>
-            <g class="sweep"><path d="M16 16 L16 1.5 A14.5 14.5 0 0 1 26.3 5.8 Z" fill="var(--accent)" fill-opacity=".28"/><line x1="16" y1="16" x2="16" y2="1.5" stroke="var(--accent)" stroke-width="1.4"/></g>
-            <circle cx="16" cy="16" r="1.8" fill="var(--accent)"/>
-          </svg>
-          <span class="brand-name">Samyak Kumar</span>
-        </a>
-        <nav class="nav" aria-label="Sections">
-          ${NAV.map(([id, label]) => `<a href="${base}#${id}" data-nav="${id}">${label}</a>`).join("")}
-        </nav>
-        <div class="header-actions">
-          <button class="search-btn" type="button" data-open-palette aria-label="Search (Ctrl+K)">
-            ${icon("search")}<span class="label">Search</span><kbd>${/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘" : "Ctrl"} K</kbd>
-          </button>
-          <button class="icon-btn theme-toggle" type="button" aria-label="Toggle theme">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-              <mask id="moon-mask"><rect x="-4" y="-4" width="32" height="32" fill="#fff"/><circle class="moon-cut" cx="24" cy="0" r="7" fill="#000"/></mask>
-              <circle class="core" cx="12" cy="12" r="5" fill="currentColor" stroke="none" mask="url(#moon-mask)"/>
-              <g class="sun-rays"><path d="M12 1.5v2.2M12 20.3v2.2M4.6 4.6l1.5 1.5M17.9 17.9l1.5 1.5M1.5 12h2.2M20.3 12h2.2M4.6 19.4l1.5-1.5M17.9 6.1l1.5-1.5"/></g>
-            </svg>
-          </button>
-          <a class="btn btn-primary btn-sm header-cv" href="${esc(L.cv)}" target="_blank" rel="noopener">${icon("file")}CV</a>
-          <button class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">${icon("menu")}</button>
-        </div>
-      </div>`;
-    const drawer = document.createElement("div");
-    drawer.className = "drawer";
-    drawer.id = "drawer";
-    drawer.innerHTML =
-      NAV.map(([id, label]) => `<a href="${base}#${id}">${label}</a>`).join("") +
-      `<a href="${esc(L.cv)}" target="_blank" rel="noopener">Download CV</a>`;
-    const progress = document.createElement("div");
-    progress.className = "progress";
-    progress.setAttribute("aria-hidden", "true");
-
-    document.body.prepend(progress, header, drawer);
-
-    $(".theme-toggle", header).addEventListener("click", toggleTheme);
-    setTheme(currentTheme());
-
-    const menuBtn = $(".menu-btn", header);
-    const closeDrawer = () => {
-      drawer.classList.remove("open");
-      menuBtn.setAttribute("aria-expanded", "false");
-      menuBtn.innerHTML = icon("menu");
-    };
-    menuBtn.addEventListener("click", () => {
-      const open = !drawer.classList.contains("open");
-      drawer.classList.toggle("open", open);
-      menuBtn.setAttribute("aria-expanded", String(open));
-      menuBtn.innerHTML = icon(open ? "close" : "menu");
-    });
-    $$("a", drawer).forEach((a) => a.addEventListener("click", closeDrawer));
-    document.addEventListener("keydown", (e) => e.key === "Escape" && closeDrawer());
-
-    // scroll-driven chrome: header background, progress bar, ocean depth
-    const root = document.documentElement;
-    let ticking = false;
-    const onScroll = () => {
-      ticking = false;
-      const max = Math.max(1, root.scrollHeight - window.innerHeight);
-      const p = Math.min(1, Math.max(0, window.scrollY / max));
-      header.classList.toggle("scrolled", window.scrollY > 12);
-      root.style.setProperty("--progress", p.toFixed(4));
-      root.style.setProperty("--depth", p.toFixed(3));
-    };
-    window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
-    onScroll();
-
-    // active section in the nav
-    if (onHome) {
-      const links = new Map($$("[data-nav]", header).map((a) => [a.dataset.nav, a]));
-      const sections = NAV.map(([id]) => document.getElementById(id)).filter(Boolean);
-      const spy = () => {
-        const y = window.scrollY + window.innerHeight * 0.35;
-        let current = null;
-        for (const s of sections) if (s.offsetTop <= y) current = s.id;
-        links.forEach((a, id) => a.classList.toggle("active", id === current));
-      };
-      window.addEventListener("scroll", () => requestAnimationFrame(spy), { passive: true });
-      spy();
+    const brand = document.createElement("a");
+    brand.className = "brand glass";
+    brand.href = base || "#home";
+    brand.setAttribute("aria-label", "Samyak Kumar — back to the surface");
+    brand.innerHTML = `
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="16" r="14.5" fill="none" stroke="#4fd8e8" stroke-width="1.4"/>
+        <circle cx="16" cy="16" r="9" fill="none" stroke="#4fd8e8" stroke-opacity=".45" stroke-width="1"/>
+        <g class="sweep"><path d="M16 16 L16 1.5 A14.5 14.5 0 0 1 26.3 5.8 Z" fill="#4fd8e8" fill-opacity=".3"/><line x1="16" y1="16" x2="16" y2="1.5" stroke="#4fd8e8" stroke-width="1.4"/></g>
+        <circle cx="16" cy="16" r="1.8" fill="#4fd8e8"/>
+      </svg><span class="brand-name">Samyak Kumar</span>`;
+    const actions = document.createElement("div");
+    actions.className = "actions glass";
+    actions.innerHTML = `
+      <button class="search-btn" type="button" data-open-palette aria-label="Search (Ctrl+K)">
+        ${icon("search")}<span class="label">Search</span><kbd>${/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘" : "Ctrl"} K</kbd>
+      </button>
+      <a class="btn btn-primary btn-sm" href="${esc(L.cv)}" target="_blank" rel="noopener">${icon("file")}CV</a>`;
+    document.body.prepend(brand, actions);
+    if (onHome) buildGauge();
+    else {
+      // detail pages sit at midnight depth
+      dive.metres = 1500;
+      document.documentElement.style.setProperty("--light", "0");
     }
+  }
+
+  function buildGauge() {
+    const root = document.documentElement;
+    const zones = $$(".zone[data-zone]");
+    if (!zones.length) return;
+    const nav = document.createElement("nav");
+    nav.className = "gauge";
+    nav.setAttribute("aria-label", "Dive depth — jump to a zone");
+    nav.innerHTML =
+      `<div class="gauge-fill"></div>` +
+      zones
+        .map((z) => {
+          const k = z.dataset.zone;
+          return `<a class="g-mark" href="#${ZONE_LINK[k]}" data-z="${k}" aria-label="${ZONE_NAMES[k]} zone, ${fmtDepth(+z.dataset.depth)} metres"><span class="g-dot"></span><span class="g-label">${ZONE_NAMES[k]}<i>${fmtDepth(+z.dataset.depth)} m</i></span></a>`;
+        })
+        .join("") +
+      `<div class="g-auv">${AUV_SVG}<div class="g-read glass"><b>0</b> m<span>Surface</span></div></div>`;
+    const chip = document.createElement("button");
+    chip.className = "depth-chip glass";
+    chip.type = "button";
+    chip.setAttribute("aria-expanded", "false");
+    chip.setAttribute("aria-controls", "zone-sheet");
+    chip.innerHTML = `${icon("down")}<b>0</b>&nbsp;m · <span>Surface</span>`;
+    const sheet = document.createElement("div");
+    sheet.className = "zone-sheet glass";
+    sheet.id = "zone-sheet";
+    sheet.innerHTML = zones
+      .map((z) => `<a href="#${ZONE_LINK[z.dataset.zone]}" data-z="${z.dataset.zone}">${ZONE_NAMES[z.dataset.zone]}<i>${fmtDepth(+z.dataset.depth)} m</i></a>`)
+      .join("");
+    document.body.append(nav, chip, sheet);
+
+    const marks = $$(".g-mark", nav);
+    const auv = $(".g-auv", nav);
+    const readB = $(".g-read b", nav), readZ = $(".g-read span", nav);
+    const chipB = $("b", chip), chipZ = $("span", chip);
+    const sheetLinks = $$("a", sheet);
+    let anchors = [];
+    const measure = () => {
+      const docH = Math.max(1, root.scrollHeight);
+      anchors = zones.map((z) => ({ y: z.getBoundingClientRect().top + window.scrollY, d: +z.dataset.depth, k: z.dataset.zone }));
+      anchors.push({ y: docH, d: END_DEPTH, k: "seabed" });
+      marks.forEach((m, i) => (m.style.top = `${((anchors[i].y / docH) * 100).toFixed(2)}%`));
+      update();
+    };
+    let lastZone = "";
+    const update = () => {
+      const docH = Math.max(1, root.scrollHeight);
+      const atBottom = window.scrollY + window.innerHeight >= docH - 4;
+      const ref = atBottom ? docH : window.scrollY + window.innerHeight * 0.4;
+      let i = 0;
+      while (i < anchors.length - 2 && ref >= anchors[i + 1].y) i++;
+      const a = anchors[i], b = anchors[i + 1] || a;
+      const t = b.y > a.y ? Math.min(1, Math.max(0, (ref - a.y) / (b.y - a.y))) : 1;
+      const metres = window.scrollY < 4 ? 0 : a.d + (b.d - a.d) * t;
+      const frac = Math.min(1, ref / docH);
+      dive.metres = metres;
+      dive.frac = frac;
+      root.style.setProperty("--dive", frac.toFixed(4));
+      root.style.setProperty("--light", Math.max(0, 1 - metres / 260).toFixed(3));
+      const zk = a.k;
+      readB.textContent = chipB.textContent = fmtDepth(metres);
+      if (zk !== lastZone) {
+        lastZone = zk;
+        readZ.textContent = chipZ.textContent = ZONE_NAMES[zk];
+        marks.forEach((m, mi) => {
+          m.classList.toggle("active", m.dataset.z === zk);
+          m.classList.toggle("passed", mi <= i);
+        });
+        sheetLinks.forEach((l) => l.classList.toggle("active", l.dataset.z === zk));
+      }
+      auv.classList.toggle("lights", metres > 180);
+    };
+    let ticking = false;
+    window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; update(); }); } }, { passive: true });
+    window.addEventListener("resize", measure);
+    // content renders after boot and images load late: re-measure when the page grows
+    if ("ResizeObserver" in window) new ResizeObserver(() => measure()).observe(document.body);
+    window.addEventListener("load", measure);
+    measure();
+
+    const closeSheet = () => { sheet.classList.remove("open"); chip.setAttribute("aria-expanded", "false"); };
+    chip.addEventListener("click", () => {
+      const open = !sheet.classList.contains("open");
+      sheet.classList.toggle("open", open);
+      chip.setAttribute("aria-expanded", String(open));
+    });
+    sheetLinks.forEach((l) => l.addEventListener("click", closeSheet));
+    document.addEventListener("keydown", (e) => e.key === "Escape" && closeSheet());
+    document.addEventListener("click", (e) => { if (!sheet.contains(e.target) && !chip.contains(e.target)) closeSheet(); });
+
+    // "Back to the surface": smooth ascent with a burst of bubbles
+    document.addEventListener("click", (e) => {
+      const a = e.target.closest("[data-ascend]");
+      if (!a) return;
+      e.preventDefault();
+      document.dispatchEvent(new Event("ascend"));
+      window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+      history.replaceState(null, "", "#home");
+    });
   }
 
   /* ---------------- ocean backdrop: marine snow + bubbles ---------------- */
@@ -234,50 +271,65 @@
     const ocean = document.createElement("div");
     ocean.className = "ocean";
     ocean.setAttribute("aria-hidden", "true");
-    ocean.innerHTML = '<div class="caustics"></div><canvas id="ocean-canvas"></canvas>';
+    ocean.innerHTML = '<div class="rays"><i></i><i></i><i></i><i></i><i></i></div><div class="caustics"></div><canvas id="ocean-canvas"></canvas>';
     document.body.prepend(ocean);
 
     const canvas = $("#ocean-canvas", ocean);
     const ctx = canvas.getContext("2d");
     const dpr = Math.min(window.devicePixelRatio || 1, lowPower ? 1.25 : 2);
-    let W = 0, H = 0, parts = [], rgb = "10,110,130", running = true, last = 0, scrollV = 0, lastY = window.scrollY;
+    let W = 0, H = 0, parts = [], running = true, last = 0, scrollV = 0, lastY = window.scrollY;
     const mouse = { x: -9999, y: -9999 };
+    const GLOWS = ["79,216,232", "167,139,250", "94,234,212"];
+    const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(",");
+    // shallow water: dark teal specks; deep water: pale "marine snow"
+    const tint = () => mix([10, 105, 128], [205, 232, 242], Math.min(1, dive.metres / 400));
 
-    const readColor = () => {
-      rgb = getComputedStyle(document.documentElement).getPropertyValue("--particle").trim() || rgb;
-    };
-    const make = (anyY) => {
-      const bubble = Math.random() < 0.09;
+    const make = (anyY, forceBubble) => {
+      const deep = dive.metres > 160 && !forceBubble;
+      const bubble = forceBubble || (!deep && Math.random() < 0.12);
+      const glow = deep && dive.metres > 900 && Math.random() < 0.07;
       return {
         x: Math.random() * W,
-        y: anyY ? Math.random() * H : H + 10,
-        r: bubble ? 1.8 + Math.random() * 3.2 : 0.5 + Math.random() * 1.5,
-        vy: bubble ? 0.35 + Math.random() * 0.5 : 0.06 + Math.random() * 0.22,
-        a: bubble ? 0.28 + Math.random() * 0.25 : 0.14 + Math.random() * 0.4,
+        y: anyY ? Math.random() * H : deep ? -10 : H + 10,
+        r: bubble ? 1.8 + Math.random() * 3.2 : glow ? 1.6 + Math.random() * 1.6 : 0.5 + Math.random() * 1.5,
+        // positive vy rises, negative sinks (marine snow)
+        vy: forceBubble ? 2.5 + Math.random() * 3 : bubble ? 0.35 + Math.random() * 0.5 : deep ? -(0.08 + Math.random() * 0.25) : 0.06 + Math.random() * 0.22,
+        a: bubble ? 0.3 + Math.random() * 0.25 : 0.16 + Math.random() * 0.42,
         phase: Math.random() * Math.PI * 2,
         sway: 0.15 + Math.random() * 0.4,
         bubble,
+        glow: glow ? GLOWS[(Math.random() * GLOWS.length) | 0] : null,
         dx: 0,
         dy: 0,
       };
     };
+    let target = 0;
     const resize = () => {
       W = window.innerWidth;
       H = window.innerHeight;
       canvas.width = Math.round(W * dpr);
       canvas.height = Math.round(H * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const target = Math.round(Math.min(150, Math.max(36, (W * H) / 13000)) * (lowPower ? 0.55 : 1));
+      target = Math.round(Math.min(150, Math.max(36, (W * H) / 13000)) * (lowPower ? 0.55 : 1));
       while (parts.length < target) parts.push(make(true));
-      parts.length = target;
+      if (parts.length > target + 40) parts.length = target;
     };
     const draw = (t) => {
       ctx.clearRect(0, 0, W, H);
+      const rgb = tint();
       for (const p of parts) {
-        ctx.beginPath();
         const x = p.x + p.dx + Math.sin(t * 0.0006 + p.phase) * 6 * p.sway;
         const y = p.y + p.dy;
-        if (p.bubble) {
+        ctx.beginPath();
+        if (p.glow) {
+          const pulse = 0.5 + 0.5 * Math.sin(t * 0.002 + p.phase * 3);
+          const g = ctx.createRadialGradient(x, y, 0, x, y, p.r * 6);
+          g.addColorStop(0, `rgba(${p.glow},${0.75 * pulse + 0.15})`);
+          g.addColorStop(1, `rgba(${p.glow},0)`);
+          ctx.fillStyle = g;
+          ctx.arc(x, y, p.r * 6, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (p.bubble) {
           ctx.arc(x, y, p.r, 0, Math.PI * 2);
           ctx.strokeStyle = `rgba(${rgb},${p.a})`;
           ctx.lineWidth = 1;
@@ -313,17 +365,16 @@
         }
         p.dx *= 0.95;
         p.dy *= 0.95;
-        if (p.y < -12) Object.assign(p, make(false));
-        if (p.y > H + 14) p.y = -10;
+        if (p.y < -14 || p.y > H + 14) Object.assign(p, make(false));
       }
+      // drop the extra ascent bubbles once they leave the screen
+      if (parts.length > target) parts = parts.filter((p, i) => i < target || (p.y > -14 && p.y < H + 14 && p.vy > 2));
       draw(t);
       requestAnimationFrame(step);
     };
 
-    readColor();
     resize();
     window.addEventListener("resize", resize);
-    document.addEventListener("themechange", () => { readColor(); if (reduceMotion) draw(0); });
     if (finePointer) {
       window.addEventListener("pointermove", (e) => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
       document.addEventListener("pointerleave", () => { mouse.x = mouse.y = -9999; });
@@ -333,6 +384,13 @@
       window.addEventListener("resize", () => draw(0));
       return;
     }
+    document.addEventListener("ascend", () => {
+      for (let k = 0; k < 40; k++) {
+        const b = make(false, true);
+        b.y = H + Math.random() * 80;
+        parts.push(b);
+      }
+    });
     document.addEventListener("visibilitychange", () => {
       running = !document.hidden;
       if (running) { last = 0; requestAnimationFrame(step); }
@@ -427,7 +485,6 @@
     const actions = [
       { title: "Download CV (PDF)", icon: "download", href: L.cv, ext: true },
       c.emailPersonal && { title: "Copy email address", sub: c.emailPersonal, icon: "mail", run: () => copyText(c.emailPersonal, "Email copied") },
-      { title: "Toggle light / dark theme", icon: "eye", run: toggleTheme },
       c.githubUrl && { title: "GitHub profile", sub: c.githubUrl.replace("https://", ""), icon: "github", href: c.githubUrl, ext: true },
       c.linkedin && { title: "LinkedIn profile", sub: "linkedin.com", icon: "linkedin", href: c.linkedin, ext: true },
       { title: "Print this page", icon: "printer", run: () => window.print() },
@@ -563,7 +620,7 @@
           ${c.githubUrl ? `<a href="${esc(c.githubUrl)}" target="_blank" rel="noopener">GitHub</a>` : ""}
           ${c.linkedin ? `<a href="${esc(c.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>` : ""}
           <a href="${esc(L.cv)}" target="_blank" rel="noopener">CV</a>
-          <a href="${document.getElementById("home") ? "#home" : "index.html"}">Back to surface ↑</a>
+          <a href="${document.getElementById("home") ? "#home" : "index.html"}"${document.getElementById("home") ? " data-ascend" : ""}>Back to surface ↑</a>
         </span>
       </div>`;
     document.body.appendChild(f);
@@ -578,8 +635,8 @@
 
   document.documentElement.classList.add("js");
   document.addEventListener("DOMContentLoaded", () => {
+    buildChrome();
     buildOcean();
-    buildHeader();
     buildFooter();
     buildPalette();
     document.dispatchEvent(new Event("ui:ready"));

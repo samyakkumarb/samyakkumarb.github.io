@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Samyak Kumar — Marine Robotics &amp; AUV Research · IIT Madras</title>
   <meta name="description" content="Samyak Kumar — undergraduate researcher in marine robotics at IIT Madras. Autonomous underwater vehicles, sensor fusion, sonar perception, and OCEANS 2026 publications." />
   <meta name="author" content="Samyak Kumar" />
-  <meta name="theme-color" content="#f3f8fa" />
+  <meta name="theme-color" content="#e9f6fb" />
   <link rel="canonical" href="https://samyakkumarb.github.io/" />
 
   <meta property="og:type" content="website" />
@@ -22,15 +22,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" />
   <link rel="preload" as="image" href="assets/img/headshot.webp" />
 
-  <!-- set the theme before first paint (light by default) -->
-  <script>
-    (function () {
-      var t = "light";
-      try { t = localStorage.getItem("theme") || "light"; } catch (e) {}
-      document.documentElement.setAttribute("data-theme", t);
-      document.documentElement.classList.add("js");
-    })();
-  </script>
+  <script>document.documentElement.classList.add("js");</script>
   <link rel="stylesheet" href="assets/css/style.css" />
   <link rel="stylesheet" href="assets/css/print.css" media="print" />
 
@@ -57,6 +49,7 @@
   <a class="skip-link" href="#main">Skip to content</a>
 
   <main id="main">
+    <div class="zone tone-light" data-zone="surface" data-depth="0">
     <section class="hero" id="home" aria-label="Introduction">
       <div class="container hero-grid">
         <div class="hero-anim" id="hero-text">
@@ -75,15 +68,36 @@
       <a class="scroll-cue" href="#about" aria-label="Scroll to About"><span></span>Dive in</a>
     </section>
 
-    <section class="section" id="about" aria-label="About"><div class="container" id="about-body"></div></section>
-    <section class="section" id="stats" aria-label="At a glance" style="padding-top:0"><div class="container" id="stats-body"></div></section>
-    <section class="section" id="research" aria-label="Research and publications"><div class="container" id="research-body"></div></section>
-    <section class="section" id="fleet" aria-label="AUV fleet"><div class="container" id="fleet-body"></div></section>
-    <section class="section" id="projects" aria-label="Projects"><div class="container" id="projects-body"></div></section>
-    <section class="section" id="experience" aria-label="Experience"><div class="container" id="experience-body"></div></section>
-    <section class="section" id="education" aria-label="Education"><div class="container" id="education-body"></div></section>
-    <section class="section" id="skills" aria-label="Skills"><div class="container" id="skills-body"></div></section>
-    <section class="section" id="contact" aria-label="Contact"><div class="container" id="contact-body"></div></section>
+    </div>
+
+    <div class="zone tone-light" data-zone="sunlit" data-depth="5">
+      <div class="container"><div class="zone-banner" data-reveal><span class="zb-depth"><b>0</b>–200 m</span><span class="zb-wave" aria-hidden="true"></span><span class="zb-name">Sunlit zone</span><span class="zb-note">Epipelagic · sunlight still reaches here</span></div></div>
+      <section class="section" id="about" aria-label="About"><div class="container" id="about-body"></div></section>
+      <section class="section" id="stats" aria-label="At a glance" style="padding-top:0"><div class="container" id="stats-body"></div></section>
+    </div>
+
+    <div class="zone" data-zone="twilight" data-depth="200">
+      <div class="container"><div class="zone-banner" data-reveal><span class="zb-depth"><b data-count="200">0</b>–1000 m</span><span class="zb-wave" aria-hidden="true"></span><span class="zb-name">Twilight zone</span><span class="zb-note">Mesopelagic · the last of the light fades</span></div></div>
+      <section class="section" id="research" aria-label="Research and publications"><div class="container" id="research-body"></div></section>
+    </div>
+
+    <div class="zone" data-zone="midnight" data-depth="1000">
+      <div class="container"><div class="zone-banner" data-reveal><span class="zb-depth"><b data-count="1000">0</b>–4000 m</span><span class="zb-wave" aria-hidden="true"></span><span class="zb-name">Midnight zone</span><span class="zb-note">Bathypelagic · no sunlight, only bioluminescence</span></div></div>
+      <section class="section" id="fleet" aria-label="AUV fleet"><div class="container" id="fleet-body"></div></section>
+    </div>
+
+    <div class="zone" data-zone="abyss" data-depth="4000">
+      <div class="container"><div class="zone-banner" data-reveal><span class="zb-depth"><b data-count="4000">0</b>–6000 m</span><span class="zb-wave" aria-hidden="true"></span><span class="zb-name">Abyssal zone</span><span class="zb-note">Abyssopelagic · near-freezing, crushing pressure</span></div></div>
+      <section class="section" id="projects" aria-label="Projects"><div class="container" id="projects-body"></div></section>
+    </div>
+
+    <div class="zone" data-zone="seabed" data-depth="6000">
+      <div class="container"><div class="zone-banner" data-reveal><span class="zb-depth"><b data-count="6000">0</b>+ m</span><span class="zb-wave" aria-hidden="true"></span><span class="zb-name">The seabed</span><span class="zb-note">Hadal floor · where the dive ends</span></div></div>
+      <section class="section" id="experience" aria-label="Experience"><div class="container" id="experience-body"></div></section>
+      <section class="section" id="education" aria-label="Education"><div class="container" id="education-body"></div></section>
+      <section class="section" id="skills" aria-label="Skills"><div class="container" id="skills-body"></div></section>
+      <section class="section" id="contact" aria-label="Contact"><div class="container" id="contact-body"></div></section>
+    </div>
   </main>
 
   <noscript>
