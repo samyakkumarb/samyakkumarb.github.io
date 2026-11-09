@@ -124,7 +124,7 @@
   const ZONE_LINK = { surface: "home", sunlit: "about", twilight: "research", midnight: "fleet", abyss: "projects", seabed: "experience", next: "next" };
   const fmtDepth = (m) => String(Math.round(m)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   // current dive state, read by the ocean backdrop
-  const dive = { metres: 0, frac: 0, sky: false };
+  const dive = { metres: 0, frac: 0 };
 
   const AUV_SVG = `<svg viewBox="0 0 58 22" aria-hidden="true">
       <defs><linearGradient id="auv-body" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd166"/><stop offset="1" stop-color="#f59e0b"/></linearGradient>
@@ -223,9 +223,6 @@
       const metres = window.scrollY < 4 ? 0 : a.d + (b.d - a.d) * t;
       const frac = Math.min(1, ref / docH);
       dive.metres = metres;
-      // above the waterline of "The next dive" the backdrop shows bubbles, not deep-sea glow
-      const asc = document.querySelector(".ascent");
-      dive.sky = !!asc && window.scrollY + window.innerHeight * 0.5 > asc.getBoundingClientRect().bottom + window.scrollY;
       dive.frac = frac;
       root.style.setProperty("--dive", frac.toFixed(4));
       root.style.setProperty("--light", Math.max(0, 1 - metres / 260).toFixed(3));
@@ -287,12 +284,13 @@
     const GLOWS = ["79,216,232", "167,139,250", "94,234,212"];
     const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(",");
     // shallow water: dark teal specks; deep water: pale "marine snow"
-    const tint = () => (dive.sky ? "10,105,128" : mix([10, 105, 128], [205, 232, 242], Math.min(1, dive.metres / 400)));
+    const tint = () => mix([10, 105, 128], [205, 232, 242], Math.min(1, dive.metres / 400));
 
     const make = (anyY, forceBubble) => {
-      const deep = dive.metres > 160 && !forceBubble && !dive.sky;
+      const deep = dive.metres > 160 && !forceBubble;
       const bubble = forceBubble || (!deep && Math.random() < 0.12);
-      const glow = deep && dive.metres > 900 && Math.random() < 0.07;
+      // more bioluminescence in the trench below the seabed
+      const glow = deep && dive.metres > 900 && Math.random() < (dive.metres > 6000 ? 0.14 : 0.07);
       return {
         x: Math.random() * W,
         y: anyY ? Math.random() * H : deep ? -10 : H + 10,
@@ -371,7 +369,6 @@
         p.dx *= 0.95;
         p.dy *= 0.95;
         if (p.y < -14 || p.y > H + 14) Object.assign(p, make(false));
-        else if (dive.sky && (p.glow || p.vy < 0)) Object.assign(p, make(true));
       }
       // drop the extra ascent bubbles once they leave the screen
       if (parts.length > target) parts = parts.filter((p, i) => i < target || (p.y > -14 && p.y < H + 14 && p.vy > 2));
