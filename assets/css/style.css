@@ -1915,21 +1915,6 @@ main { display: block; }
   --grad: linear-gradient(110deg, #5eead4, #4fd8e8 50%, #fbbf24);
   padding-bottom: 0;
 }
-/* sand ripples on the seabed */
-.zone[data-zone="seabed"]::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 340px;
-  z-index: -2;
-  background:
-    repeating-radial-gradient(ellipse 140% 40px at 50% 100%, rgba(214, 182, 128, 0.07) 0 2px, transparent 2px 22px),
-    radial-gradient(ellipse 90% 100% at 50% 100%, rgba(120, 96, 60, 0.32), transparent 70%);
-  mask-image: linear-gradient(180deg, transparent, #000 60%);
-  -webkit-mask-image: linear-gradient(180deg, transparent, #000 60%);
-}
 .zone > .container + .section { padding-top: 36px; }
 
 /* zone banner: depth · animated wave · name · note */
@@ -2039,7 +2024,8 @@ main { display: block; }
 .page-deep .detail, .page-deep main { color: var(--text); }
 .site-footer { position: relative; }
 /* the home page ends in the ascent zone: footer continues its colour */
-body:has(.zone[data-zone="next"]) .site-footer { background: #020308; }
+/* the footer is the sea floor the page ends on */
+body:has(.zone[data-zone="next"]) .site-footer { background: linear-gradient(180deg, #2b2218, #120f0b 60%, #07090c); }
 
 /* ================= The next dive (ascent zone + five-act story) ================= */
 .zone[data-zone="next"] {
@@ -2057,7 +2043,9 @@ body:has(.zone[data-zone="next"]) .site-footer { background: #020308; }
 /* the hadal trench: keeps getting darker after the seabed, with steep walls on both sides */
 .zone[data-zone="next"]::before {
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.75), transparent 14%, transparent 86%, rgba(0, 0, 0, 0.75)),
+    /* the sea floor at the very end of the page: sand ripples fading in */
+    repeating-radial-gradient(ellipse 140% 40px at 50% 100%, rgba(214, 182, 128, 0.08) 0 2px, transparent 2px 22px) bottom / 100% 340px no-repeat,
+    radial-gradient(ellipse 90% 100% at 50% 100%, rgba(120, 96, 60, 0.34), transparent 70%) bottom / 100% 340px no-repeat,
     linear-gradient(180deg, #07090c 0, #04060b 35%, #020308 100%);
 }
 /* drifting bioluminescent glow behind the story */
