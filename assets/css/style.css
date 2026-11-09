@@ -47,7 +47,8 @@
   color-scheme: dark;
 }
 
-.tone-light {
+.tone-light,
+body:has(.zone[data-zone="next"]) .site-footer {
   --bg: #e9f6fb;
   --bg-deep: #cfeaf4;
   --surface: rgba(255, 255, 255, 0.74);
@@ -2041,29 +2042,43 @@ main { display: block; }
 .page-deep .detail, .page-deep main { color: var(--text); }
 .site-footer { position: relative; }
 /* the home page ends in the ascent zone: footer continues its colour */
-body:has(.zone[data-zone="next"]) .site-footer { background: #0e4a72; border-top-color: transparent; }
+body:has(.zone[data-zone="next"]) .site-footer { background: #fde9d2; }
 
 /* ================= The next dive (ascent zone + five-act story) ================= */
-.zone[data-zone="next"] {
-  --z-top: #07090c; --z-mid: #061a33; --z-mid-at: 40%; --z-bot: #0e4a72;
-  --accent: #5eead4;
-  --accent-strong: #99f6e4;
-  --accent-soft: rgba(94, 234, 212, 0.14);
-  --glow: rgba(94, 234, 212, 0.42);
-  --sonar: 94, 234, 212;
-  --grad: linear-gradient(110deg, #fbbf24, #5eead4 45%, #a78bfa);
-  padding-bottom: 0;
-}
-/* light from the surface returning at the end of the ascent */
+.zone[data-zone="next"] { padding-bottom: 0; }
+/* above the waterline: bright morning sky that warms toward the bottom */
+.zone[data-zone="next"]::before { background: linear-gradient(180deg, #e3f5fb 0, #eef9fd 30%, #fbf3e8 80%, #fde9d2 100%); }
 .zone[data-zone="next"]::after {
   content: "";
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  height: 520px;
+  height: 620px;
   z-index: -2;
-  background: radial-gradient(ellipse 70% 100% at 50% 100%, rgba(253, 226, 184, 0.16), transparent 70%);
+  background: radial-gradient(ellipse 60% 90% at 50% 100%, rgba(255, 196, 120, 0.32), transparent 70%);
   pointer-events: none;
 }
+/* the ascent: dark water brightening up to a moving sea surface */
+.ascent {
+  position: relative;
+  height: clamp(340px, 52vh, 500px);
+  overflow: hidden;
+  contain: paint;
+  background: linear-gradient(180deg, #07090c 0%, #082640 32%, #135d8c 64%, #3fa6d0 86%, #8fd8ef 100%);
+}
+.ascent::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 70%; height: 70%; transform: translateX(-50%); background: radial-gradient(ellipse at 50% 100%, rgba(255, 244, 214, 0.55), transparent 65%); pointer-events: none; }
+.asc-bubbles i { position: absolute; bottom: -24px; left: var(--x); width: var(--s); height: var(--s); border-radius: 50%; border: 1.5px solid rgba(225, 247, 255, 0.65); background: radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.7) 0 18%, transparent 22%); animation: asc-rise var(--t) linear infinite; animation-delay: var(--d); }
+.asc-label { position: absolute; left: 50%; top: 34%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 12px; font: 600 0.74rem var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; color: #cdeefa; white-space: nowrap; z-index: 1; }
+.asc-arrows { display: flex; flex-direction: column; line-height: 0.9; font-size: 0.9rem; color: #7ee3f2; }
+.asc-arrows i { font-style: normal; animation: asc-chev 1.6s ease-in-out infinite; }
+.asc-arrows i:nth-child(2) { animation-delay: 0.2s; }
+.asc-arrows i:nth-child(3) { animation-delay: 0.4s; }
+.asc-wave { position: absolute; left: 0; bottom: -1px; width: 200%; height: 56px; z-index: 2; }
+.asc-wave path { fill: #e3f5fb; }
+.asc-wave.w-front { animation: asc-wave 9s linear infinite; }
+.asc-wave.w-back { height: 64px; opacity: 0.5; animation: asc-wave 14s linear infinite reverse; }
+@keyframes asc-rise { 0% { transform: translate(0, 0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 0.9; } 100% { transform: translate(14px, -540px); opacity: 0; } }
+@keyframes asc-chev { 0%, 100% { opacity: 0.25; transform: translateY(4px); } 50% { opacity: 1; transform: translateY(-2px); } }
+@keyframes asc-wave { to { transform: translateX(-50%); } }
 .nd-lead { max-width: 64ch; font-size: clamp(1.05rem, 1.6vw, 1.2rem); line-height: 1.75; color: var(--text-2); margin: 6px 0 0; }
 .nd-lead mark { background: linear-gradient(transparent 58%, rgba(var(--sonar), 0.28) 0); color: var(--text); padding: 0 2px; border-radius: 2px; }
 
@@ -2104,7 +2119,7 @@ body:has(.zone[data-zone="next"]) .site-footer { background: #0e4a72; border-top
 /* chapters: plain text on a glowing rail, no cards */
 .nd-chapters { list-style: none; margin: 0; padding: 0; }
 .nd-ch { position: relative; min-height: 78vh; display: flex; flex-direction: column; justify-content: center; padding-left: 30px; border-left: 2px solid var(--border); opacity: 0.32; transition: opacity 0.7s var(--ease), border-color 0.7s; }
-.nd-ch::before { content: ""; position: absolute; left: -8px; top: 50%; width: 14px; height: 14px; border-radius: 50%; background: #061a33; border: 2px solid var(--border-strong); transition: background 0.5s, box-shadow 0.5s, border-color 0.5s; }
+.nd-ch::before { content: ""; position: absolute; left: -8px; top: 50%; width: 14px; height: 14px; border-radius: 50%; background: var(--surface-solid); border: 2px solid var(--border-strong); transition: background 0.5s, box-shadow 0.5s, border-color 0.5s; }
 .nd-ch.on { opacity: 1; border-color: rgba(var(--sonar), 0.55); }
 .nd-ch.on::before { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 7px var(--accent-soft), 0 0 26px var(--glow); }
 .nd-ch > * { transition: transform 0.8s var(--ease); }
@@ -2273,7 +2288,8 @@ body:has(.zone[data-zone="next"]) .site-footer { background: #0e4a72; border-top
   .js .zone [data-reveal] { filter: none !important; }
   .js .zone-banner .zb-wave { transform: none; }
   .js [data-reveal]:not(.in) .section-title::after { transform: none; }
-  .nd-svg .act *, .critters * { animation: none !important; }
+  .nd-svg .act *, .critters *, .asc-bubbles i, .asc-wave, .asc-arrows i { animation: none !important; }
+  .asc-bubbles i { display: none; }
   .nd-svg .act .draw, .nd-svg .act .mapped { stroke-dashoffset: 0; }
   .nd-svg .act .icesheet, .nd-svg .act .cracks, .nd-svg .act .callout text, .nd-svg .act .bp-t, .nd-svg .act .eq { transform: none; opacity: 1; }
   .nd-quote span { opacity: 1; transform: none; filter: none; }

@@ -219,7 +219,13 @@
       while (i < anchors.length - 2 && ref >= anchors[i + 1].y) i++;
       const a = anchors[i], b = anchors[i + 1] || a;
       const t = b.y > a.y ? Math.min(1, Math.max(0, (ref - a.y) / (b.y - a.y))) : 1;
-      const metres = window.scrollY < 4 ? 0 : a.d + (b.d - a.d) * t;
+      let metres = window.scrollY < 4 ? 0 : a.d + (b.d - a.d) * t;
+      // last zone: the ascent strip climbs from its depth to 0 m at the waterline, then we stay at the surface
+      const asc = a.k === "next" && document.querySelector(".ascent");
+      if (asc) {
+        const r = asc.getBoundingClientRect(), top = r.top + window.scrollY;
+        metres = a.d * (1 - Math.min(1, Math.max(0, (ref - top) / Math.max(1, r.height))));
+      }
       const frac = Math.min(1, ref / docH);
       dive.metres = metres;
       dive.frac = frac;
