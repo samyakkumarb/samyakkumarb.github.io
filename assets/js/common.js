@@ -124,7 +124,7 @@
   const ZONE_LINK = { surface: "home", sunlit: "about", twilight: "research", midnight: "fleet", abyss: "projects", seabed: "experience", next: "next" };
   const fmtDepth = (m) => String(Math.round(m)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   // current dive state, read by the ocean backdrop
-  const dive = { metres: 0, frac: 0 };
+  const dive = { metres: 0, frac: 0, sky: false };
 
   const AUV_SVG = `<svg viewBox="0 0 58 22" aria-hidden="true">
       <defs><linearGradient id="auv-body" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd166"/><stop offset="1" stop-color="#f59e0b"/></linearGradient>
@@ -168,7 +168,8 @@
 
   function buildGauge() {
     const root = document.documentElement;
-    const zones = $$(".zone[data-zone]");
+    // "The next dive" is part of the deepest stretch, not a stop of its own on the gauge
+    const zones = $$(".zone[data-zone]").filter((z) => z.dataset.zone !== "next");
     if (!zones.length) return;
     const nav = document.createElement("nav");
     nav.className = "gauge";
@@ -205,8 +206,8 @@
     const measure = () => {
       const docH = Math.max(1, root.scrollHeight);
       anchors = zones.map((z) => ({ y: z.getBoundingClientRect().top + window.scrollY, d: +z.dataset.depth, k: z.dataset.zone }));
-      // the last zone is the ascent: depth climbs back to the surface by the end of the page
-      anchors.push({ y: docH, d: 0, k: "next" });
+      // the dive keeps going through the last zones and ends at 6 500 m at the bottom of the page
+      anchors.push({ y: docH, d: 6500, k: "seabed" });
       marks.forEach((m, i) => (m.style.top = `${((anchors[i].y / docH) * 100).toFixed(2)}%`));
       update();
     };
@@ -219,15 +220,12 @@
       while (i < anchors.length - 2 && ref >= anchors[i + 1].y) i++;
       const a = anchors[i], b = anchors[i + 1] || a;
       const t = b.y > a.y ? Math.min(1, Math.max(0, (ref - a.y) / (b.y - a.y))) : 1;
-      let metres = window.scrollY < 4 ? 0 : a.d + (b.d - a.d) * t;
-      // last zone: the ascent strip climbs from its depth to 0 m at the waterline, then we stay at the surface
-      const asc = a.k === "next" && document.querySelector(".ascent");
-      if (asc) {
-        const r = asc.getBoundingClientRect(), top = r.top + window.scrollY;
-        metres = a.d * (1 - Math.min(1, Math.max(0, (ref - top) / Math.max(1, r.height))));
-      }
+      const metres = window.scrollY < 4 ? 0 : a.d + (b.d - a.d) * t;
       const frac = Math.min(1, ref / docH);
       dive.metres = metres;
+      // above the waterline of "The next dive" the backdrop shows bubbles, not deep-sea glow
+      const asc = document.querySelector(".ascent");
+      dive.sky = !!asc && window.scrollY + window.innerHeight * 0.5 > asc.getBoundingClientRect().bottom + window.scrollY;
       dive.frac = frac;
       root.style.setProperty("--dive", frac.toFixed(4));
       root.style.setProperty("--light", Math.max(0, 1 - metres / 260).toFixed(3));
@@ -243,7 +241,6 @@
         sheetLinks.forEach((l) => l.classList.toggle("active", l.dataset.z === zk));
       }
       auv.classList.toggle("lights", metres > 180);
-      auv.classList.toggle("rising", zk === "next");
     };
     let ticking = false;
     window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; update(); }); } }, { passive: true });
@@ -290,10 +287,10 @@
     const GLOWS = ["79,216,232", "167,139,250", "94,234,212"];
     const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(",");
     // shallow water: dark teal specks; deep water: pale "marine snow"
-    const tint = () => mix([10, 105, 128], [205, 232, 242], Math.min(1, dive.metres / 400));
+    const tint = () => (dive.sky ? "10,105,128" : mix([10, 105, 128], [205, 232, 242], Math.min(1, dive.metres / 400)));
 
     const make = (anyY, forceBubble) => {
-      const deep = dive.metres > 160 && !forceBubble;
+      const deep = dive.metres > 160 && !forceBubble && !dive.sky;
       const bubble = forceBubble || (!deep && Math.random() < 0.12);
       const glow = deep && dive.metres > 900 && Math.random() < 0.07;
       return {
@@ -374,6 +371,7 @@
         p.dx *= 0.95;
         p.dy *= 0.95;
         if (p.y < -14 || p.y > H + 14) Object.assign(p, make(false));
+        else if (dive.sky && (p.glow || p.vy < 0)) Object.assign(p, make(true));
       }
       // drop the extra ascent bubbles once they leave the screen
       if (parts.length > target) parts = parts.filter((p, i) => i < target || (p.y > -14 && p.y < H + 14 && p.vy > 2));

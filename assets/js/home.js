@@ -337,7 +337,7 @@
     set(
       "contact-body",
       `<div class="card contact" data-reveal="scale">
-        <div class="seabed-mark">▲ 0 m · back at the surface</div>
+        <div class="seabed-mark">▼ 6 500 m · end of the dive</div>
         <div class="eyebrow" style="justify-content:center">Contact</div>
         <h2>Let’s talk about the ocean.</h2>
         <p>${fp && fp.target ? `Currently looking for: ${esc(fp.target)}. ` : ""}I’m happy to discuss research, collaborations or underwater robots.</p>

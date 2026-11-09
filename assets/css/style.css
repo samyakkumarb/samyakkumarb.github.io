@@ -342,8 +342,6 @@ kbd {
 .g-auv .beam { opacity: 0; transition: opacity 0.6s; }
 .g-auv.lights .beam { opacity: 1; }
 @keyframes bob { 0%, 100% { transform: translate(14px, 0) rotate(12deg); } 50% { transform: translate(14px, 3px) rotate(16deg); } }
-.g-auv.rising svg { animation-name: bob-up; }
-@keyframes bob-up { 0%, 100% { transform: translate(14px, 0) rotate(-14deg); } 50% { transform: translate(14px, -3px) rotate(-18deg); } }
 .g-read {
   position: absolute;
   left: 18px;
