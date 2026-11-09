@@ -318,7 +318,7 @@ window.SITE = {
    {
     "role": "Joint Secretary",
     "org": "Marine Technology Society (MTS) IIT Madras Student Section (2024 – 2025)",
-    "detail": "Directed technical events, workshops and outreach, organised Techsym 2025 for students, researchers, industry and government, and managed collaborations with NIOT and IEEE OES."
+    "detail": "Directed technical events, workshops and outreach, organised Techsym 2025, the flagship MTS IIT Madras event, for students, researchers, industry and government (100+ participants, including logistics), and managed collaborations with NIOT and IEEE OES."
    },
    {
     "role": "Student Ambassador",
@@ -326,12 +326,7 @@ window.SITE = {
     "detail": "Represented IIT Madras in the RINA international network."
    }
   ],
-  "events": [
-   {
-    "title": "Techsym 2025 — IIT Madras",
-    "detail": "Organised the flagship MTS IIT Madras event and managed logistics for 100+ participants."
-   }
-  ],
+  "events": [],
   "researchInterests": [
    "Underwater Robotics",
    "Acoustic Sensing",
@@ -1387,9 +1382,9 @@ window.SITE = {
    ],
    "images": [
     {
-     "src": "projects/info-driven-docking/hero.webp",
-     "alt": "Torpedo AUV used for the docking research",
-     "caption": "The torpedo AUV used in this work."
+     "src": "projects/info-driven-docking/sim-scene.webp",
+     "alt": "Simulated AUV approaching a lit funnel dock over the seabed",
+     "caption": "Simulation: the AUV searching for and approaching the funnel dock, with its camera view cone shown."
     },
     {
      "src": "projects/info-driven-docking/funnel-dock.webp",

@@ -301,7 +301,7 @@
       <div class="edu-grid">
         ${eduCard("Awards & honours", "award", arr(edu.awards).length && itemList(edu.awards))}
         ${eduCard("Conferences", "mic", arr(edu.conferences).length && itemList(edu.conferences), 0.08)}
-        ${eduCard("Leadership", "users", arr(edu.leadership).length && itemList(edu.leadership))}
+        ${eduCard("Leadership", "users", arr(edu.leadership).length && itemList(edu.leadership), 0, !arr(edu.events).length)}
         ${eduCard("Events", "calendar", arr(edu.events).length && itemList(edu.events), 0.08)}
         ${eduCard("Relevant coursework", "book", arr(edu.coursework).length && chips(edu.coursework, "chip chip-outline"), 0, true)}
       </div>`,
