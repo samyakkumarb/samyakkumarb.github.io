@@ -19,6 +19,7 @@ A light, static version of the portfolio for marine robotics and AUV research. I
 | `projects/<slug>/*.webp` | Project images (copied by the sync script) |
 | `Samyak_Kumar_CV.pdf` | The CV behind every "CV" button |
 | `tools/sync-content.mjs` | Copies content and images over from the original React site |
+| `tools/bump-version.sh` | Stamps CSS/JS links with `?v=<time>` so visitors get fresh files after a deploy; run it before each push |
 
 Features: the home page is a dive. Each section is a depth zone (surface, sunlit, twilight, midnight, abyss, seabed) whose water colour darkens as you scroll, and a depth gauge with a descending AUV replaces the menu (a depth chip and zone list on small screens). The page ends with "The next dive", an ascent back to the surface: a scroll-driven five-act animated scene (pool tests → higher studies → real sea trials → polar robotics → bigger scale) pinned beside the text, built from inline SVG and CSS (`assets/js/next.js`). Fish, jellyfish and an anglerfish drift through the deep zones. Also an animated sonar hero; light rays near the surface; bubbles that turn into marine snow and bioluminescent sparkles with depth, all moving away from the cursor; scroll reveals and count-up numbers; a timeline that draws itself as you scroll; tilt cards; Ctrl/⌘+K (or `/`) search; one-click BibTeX copy; and a print stylesheet. Animations are switched off for visitors who have `prefers-reduced-motion` set.
 
@@ -28,6 +29,7 @@ The text lives in the original site (`~/Website/src/content/*.ts`). After editin
 
 ```bash
 cd ~/Website_github
+./tools/bump-version.sh              # then commit and push
 node tools/sync-content.mjs          # or: node tools/sync-content.mjs /path/to/Website
 ```
 
