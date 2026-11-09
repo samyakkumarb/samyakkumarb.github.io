@@ -29,8 +29,8 @@ The text lives in the original site (`~/Website/src/content/*.ts`). After editin
 
 ```bash
 cd ~/Website_github
-./tools/bump-version.sh              # then commit and push
 node tools/sync-content.mjs          # or: node tools/sync-content.mjs /path/to/Website
+./tools/bump-version.sh              # then commit and push
 ```
 
 This rewrites `assets/js/content.js` and `sitemap.xml`, and copies or removes images in `projects/`. It only *reads* `~/Website`, and it uses the esbuild already installed in `~/Website/node_modules`.
